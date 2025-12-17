@@ -22,6 +22,6 @@ public abstract class BaseException extends RuntimeException {
 	public abstract HttpStatus getHttpStatus();
 
 	public ResponseEntity<Response> getResponse() {
-		return ResponseEntity.status(getHttpStatus()).body(Fail.builder().data(errorMap).build());
+		return ResponseEntity.status(getHttpStatus()).body(Fail.fail(errorMap));
 	}
 }
