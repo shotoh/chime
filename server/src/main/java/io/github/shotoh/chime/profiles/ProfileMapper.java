@@ -5,5 +5,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = GroupMapper.class)
 public interface ProfileMapper {
-	GetProfileDTO toDTO(Profile profile);
+	GetProfileDTO toGetProfileDTO(Profile profile);
+
+	CreateProfileDTO toCreateProfileDTO(Profile profile);
 }
