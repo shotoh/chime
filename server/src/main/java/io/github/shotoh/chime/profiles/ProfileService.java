@@ -1,6 +1,7 @@
 package io.github.shotoh.chime.profiles;
 
 import io.github.shotoh.chime.exceptions.ResourceNotFoundException;
+import io.github.shotoh.chime.exceptions.UnauthorizedException;
 import io.github.shotoh.chime.sounds.Group;
 import io.github.shotoh.chime.sounds.Sound;
 import java.security.MessageDigest;
@@ -53,8 +54,12 @@ public class ProfileService {
 	}
 
 	public void deleteProfile(UUID id, String token) {
-		Profile profile =  repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
-		//
+		Profile profile = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
+		String hashToken = hashToken(token);
+		if (!hashToken.equals(profile.token())) {
+			throw new UnauthorizedException("id", "token mismatch");
+		}
+		repository.delete(profile);
 	}
 
 	private Group createDefaultGroup() {
