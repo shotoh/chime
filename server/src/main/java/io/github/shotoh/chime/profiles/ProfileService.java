@@ -3,6 +3,8 @@ package io.github.shotoh.chime.profiles;
 import io.github.shotoh.chime.exceptions.ResourceNotFoundException;
 import io.github.shotoh.chime.sounds.Group;
 import io.github.shotoh.chime.sounds.Sound;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Base64;
@@ -28,20 +30,30 @@ public class ProfileService {
 		this.encoder = Base64.getEncoder();
 	}
 
-	public ProfileNoTokenDTO getProfile(UUID id) {
+	public ProfileDTO getProfile(UUID id) {
 		Profile profile = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
 		return mapper.toDTO(profile);
 	}
 
-	public Profile createProfile() {
-		Profile profile = new Profile(UUID.randomUUID(), generateToken(), "New Profile", Instant.now().toEpochMilli(), createDefaultGroup());
+	public ProfileWithTokenDTO createProfile() {
+		String token = generateToken();
+		String hashToken = hashToken(token);
+		Profile profile = new Profile(UUID.randomUUID(), hashToken, "New Profile", Instant.now().toEpochMilli(), createDefaultGroup());
 		repository.save(profile);
-		return profile;
+		return new ProfileWithTokenDTO(mapper.toDTO(profile), hashToken);
 	}
 
-	public Profile cloneProfile(UUID id) {
+	public ProfileWithTokenDTO cloneProfile(UUID id) {
+		String token = generateToken();
+		String hashToken = hashToken(token);
 		Profile original = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
-		return new Profile(UUID.randomUUID(), generateToken(), original.name(), Instant.now().toEpochMilli(), cloneGroup(original.rootGroup()));
+		Profile clone = new Profile(UUID.randomUUID(), hashToken, original.name(), Instant.now().toEpochMilli(), cloneGroup(original.rootGroup()));
+		return new ProfileWithTokenDTO(mapper.toDTO(clone), hashToken);
+	}
+
+	public void deleteProfile(UUID id, String token) {
+		Profile profile =  repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
+		//
 	}
 
 	private Group createDefaultGroup() {
@@ -61,5 +73,15 @@ public class ProfileService {
 		byte[] tokenBytes = new byte[32];
 		random.nextBytes(tokenBytes);
 		return encoder.encodeToString(tokenBytes);
+	}
+
+	private String hashToken(String token) {
+		try {
+			MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+			byte[] hash = sha256.digest(token.getBytes());
+			return encoder.encodeToString(hash);
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("SHA-256 algorithm not found");
+		}
 	}
 }
