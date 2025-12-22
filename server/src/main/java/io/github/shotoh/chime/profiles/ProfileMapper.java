@@ -5,5 +5,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = GroupMapper.class)
 public interface ProfileMapper {
-	ProfileNoTokenDTO toDTO(Profile profile);
+	ProfileDTO toDTO(Profile profile);
 }
