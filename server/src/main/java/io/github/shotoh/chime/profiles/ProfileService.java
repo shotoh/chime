@@ -3,16 +3,13 @@ package io.github.shotoh.chime.profiles;
 import io.github.shotoh.chime.exceptions.ResourceNotFoundException;
 import io.github.shotoh.chime.exceptions.UnauthorizedException;
 import io.github.shotoh.chime.sounds.Group;
-import io.github.shotoh.chime.sounds.Sound;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +45,7 @@ public class ProfileService {
 		String token = generateToken();
 		String hashToken = hashToken(token);
 		Profile original = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
-		Profile clone = new Profile(UUID.randomUUID(), hashToken, original.name(), Instant.now().toEpochMilli(), cloneGroup(original.rootGroup()));
+		Profile clone = new Profile(UUID.randomUUID(), hashToken, original.name(), Instant.now().toEpochMilli(), original.rootGroup());
 		repository.save(clone);
 		return new ProfileWithTokenDTO(mapper.toDTO(clone), hashToken);
 	}
@@ -62,17 +59,12 @@ public class ProfileService {
 		repository.delete(profile);
 	}
 
+	public ProfileDTO updateProfile(UUID id, String token) {
+		return null;
+	}
+
 	private Group createDefaultGroup() {
-		return new Group(UUID.randomUUID(), "New Group", 0, true, Collections.emptySet(), Collections.emptySet());
-	}
-
-	private Group cloneGroup(Group group) {
-		Set<Group> subGroups = group.subGroups().stream().map(this::cloneGroup).collect(Collectors.toSet());
-		return new Group(UUID.randomUUID(), group.name(), group.order(), group.enabled(), group.sounds(), subGroups);
-	}
-
-	private Sound cloneSound(Sound sound) {
-		return new Sound(UUID.randomUUID(), sound.soundId(), sound.delay(), sound.volume(), sound.pitch(), sound.order(), sound.enabled());
+		return new Group("Root Group", true, new ArrayList<>());
 	}
 
 	private String generateToken() {
