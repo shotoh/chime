@@ -2,7 +2,11 @@ package io.github.shotoh.chime.profiles;
 
 import io.github.shotoh.chime.exceptions.ResourceNotFoundException;
 import io.github.shotoh.chime.exceptions.UnauthorizedException;
-import io.github.shotoh.chime.sounds.Group;
+import io.github.shotoh.chime.profiles.objects.Group;
+import io.github.shotoh.chime.profiles.objects.Profile;
+import io.github.shotoh.chime.profiles.objects.ProfileDTO;
+import io.github.shotoh.chime.profiles.objects.ProfileUpdateDTO;
+import io.github.shotoh.chime.profiles.objects.ProfileWithTokenDTO;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;

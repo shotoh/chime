@@ -1,6 +1,6 @@
 package io.github.shotoh.chime.core;
 
-import io.github.shotoh.chime.sounds.Group;
+import io.github.shotoh.chime.profiles.objects.Group;
 import java.util.List;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.context.annotation.Bean;

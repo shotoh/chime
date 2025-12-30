@@ -1,6 +1,5 @@
-package io.github.shotoh.chime.profiles;
+package io.github.shotoh.chime.profiles.objects;
 
-import io.github.shotoh.chime.sounds.Group;
 import java.util.UUID;
 import org.springframework.data.annotation.Id;
 

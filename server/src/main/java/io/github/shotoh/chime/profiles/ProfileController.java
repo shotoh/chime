@@ -1,5 +1,6 @@
 package io.github.shotoh.chime.profiles;
 
+import io.github.shotoh.chime.profiles.objects.ProfileUpdateDTO;
 import io.github.shotoh.chime.responses.Response;
 import io.github.shotoh.chime.responses.Success;
 import java.util.UUID;
