@@ -36,31 +36,39 @@ public class ProfileService {
 	public ProfileWithTokenDTO createProfile() {
 		String token = generateToken();
 		String hashToken = hashToken(token);
+
 		Profile profile = new Profile(UUID.randomUUID(), hashToken, "New Profile", Instant.now().toEpochMilli(), createDefaultGroup());
-		repository.save(profile);
-		return new ProfileWithTokenDTO(mapper.toDTO(profile), hashToken);
+		Profile saved = repository.save(profile);
+
+		return new ProfileWithTokenDTO(mapper.toDTO(saved), hashToken);
 	}
 
 	public ProfileWithTokenDTO cloneProfile(UUID id) {
 		String token = generateToken();
 		String hashToken = hashToken(token);
+
 		Profile original = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
 		Profile clone = new Profile(UUID.randomUUID(), hashToken, original.name(), Instant.now().toEpochMilli(), original.rootGroup());
-		repository.save(clone);
-		return new ProfileWithTokenDTO(mapper.toDTO(clone), hashToken);
+		Profile saved = repository.save(clone);
+
+		return new ProfileWithTokenDTO(mapper.toDTO(saved), hashToken);
 	}
 
 	public void deleteProfile(UUID id, String token) {
 		Profile profile = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
-		String hashToken = hashToken(token);
-		if (!hashToken.equals(profile.token())) {
-			throw new UnauthorizedException("id", "token mismatch");
-		}
+		verifyToken(profile, token);
+
 		repository.delete(profile);
 	}
 
-	public ProfileDTO updateProfile(UUID id, String token) {
-		return null;
+	public ProfileDTO updateProfile(UUID id, String token, ProfileUpdateDTO profileUpdateDTO) {
+		Profile profile = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
+		verifyToken(profile, token);
+
+		// update profile
+
+		Profile saved = repository.save(profile);
+		return mapper.toDTO(saved);
 	}
 
 	private Group createDefaultGroup() {
@@ -81,5 +89,16 @@ public class ProfileService {
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException("SHA-256 algorithm not found");
 		}
+	}
+
+	private void verifyToken(Profile profile, String token) {
+		String hashToken = hashToken(token);
+		if (!hashToken.equals(profile.token())) {
+			throw new UnauthorizedException("id", "token mismatch");
+		}
+	}
+
+	private void verifyGroup(Group group) {
+		//
 	}
 }

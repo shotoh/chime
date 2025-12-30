@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -43,16 +44,15 @@ public class ProfileController {
 		return Success.success(service.cloneProfile(id));
 	}
 
+	@PatchMapping("/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public Response updateProfile(@PathVariable UUID id, @RequestHeader("Authorization") String token, @RequestBody ProfileUpdateDTO profileUpdateDTO) {
+		return Success.success(service.updateProfile(id, token, profileUpdateDTO));
+	}
+
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public Response deleteProfile(@PathVariable UUID id, @RequestHeader("Authorization") String token) {
-		service.deleteProfile(id, token);
-		return Success.success(null);
-	}
-
-	@PatchMapping("/{id}")
-	@ResponseStatus(HttpStatus.OK)
-	public Response updateProfile(@PathVariable UUID id, @RequestHeader("Authorization") String token) {
 		service.deleteProfile(id, token);
 		return Success.success(null);
 	}
