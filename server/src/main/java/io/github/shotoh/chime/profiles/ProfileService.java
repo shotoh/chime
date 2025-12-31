@@ -55,7 +55,7 @@ public class ProfileService {
 		String hashToken = hashToken(token);
 
 		Profile original = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
-		Profile clone = new Profile(UUID.randomUUID(), hashToken, original.name(), Instant.now().toEpochMilli(), original.rootGroup());
+		Profile clone = new Profile(UUID.randomUUID(), hashToken, original.getName(), Instant.now().toEpochMilli(), original.getRootGroup());
 		Profile saved = repository.save(clone);
 
 		return new ProfileWithTokenDTO(mapper.toDTO(saved), hashToken);
@@ -99,7 +99,7 @@ public class ProfileService {
 
 	private void verifyToken(Profile profile, String token) {
 		String hashToken = hashToken(token);
-		if (!hashToken.equals(profile.token())) {
+		if (!hashToken.equals(profile.getToken())) {
 			throw new UnauthorizedException("id", "token mismatch");
 		}
 	}
