@@ -73,6 +73,10 @@ public class ProfileService {
 		verifyToken(profile, token);
 		verifyGroup(profileUpdateDTO.rootGroup());
 
+		profile.setName(profileUpdateDTO.name());
+		profile.setTimestamp(Instant.now().toEpochMilli());
+		profile.setRootGroup(profileUpdateDTO.rootGroup());
+
 		Profile saved = repository.save(profile);
 		return mapper.toDTO(saved);
 	}
