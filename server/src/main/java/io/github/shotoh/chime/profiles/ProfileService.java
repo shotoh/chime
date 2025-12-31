@@ -1,12 +1,15 @@
 package io.github.shotoh.chime.profiles;
 
+import io.github.shotoh.chime.exceptions.InvalidArgumentException;
 import io.github.shotoh.chime.exceptions.ResourceNotFoundException;
 import io.github.shotoh.chime.exceptions.UnauthorizedException;
 import io.github.shotoh.chime.profiles.objects.Group;
+import io.github.shotoh.chime.profiles.objects.GroupItem;
 import io.github.shotoh.chime.profiles.objects.Profile;
 import io.github.shotoh.chime.profiles.objects.ProfileDTO;
 import io.github.shotoh.chime.profiles.objects.ProfileUpdateDTO;
 import io.github.shotoh.chime.profiles.objects.ProfileWithTokenDTO;
+import io.github.shotoh.chime.profiles.objects.Sound;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -68,8 +71,7 @@ public class ProfileService {
 	public ProfileDTO updateProfile(UUID id, String token, ProfileUpdateDTO profileUpdateDTO) {
 		Profile profile = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
 		verifyToken(profile, token);
-
-		// update profile
+		verifyGroup(profileUpdateDTO.rootGroup());
 
 		Profile saved = repository.save(profile);
 		return mapper.toDTO(saved);
@@ -103,6 +105,36 @@ public class ProfileService {
 	}
 
 	private void verifyGroup(Group group) {
-		//
+		int maxDepth = countDepth(group, 1);
+		if (maxDepth >= 3) {
+			throw new InvalidArgumentException("rootGroup", "group depth cannot be more than 3");
+		}
+		int sounds = countSounds(group);
+		if (sounds >= 200) {
+			throw new InvalidArgumentException("rootGroup", "sounds cannot be more than 200");
+		}
+	}
+
+	private int countDepth(Group group, int currentDepth) {
+		int maxDepth = currentDepth;
+		for (GroupItem item : group.items()) {
+			if (item instanceof Group subGroup) {
+				int nestedDepth = countDepth(subGroup, currentDepth + 1);
+				maxDepth = Math.max(maxDepth, nestedDepth);
+			}
+		}
+		return maxDepth;
+	}
+
+	private int countSounds(Group group) {
+		int count = 0;
+		for (GroupItem item : group.items()) {
+			if (item instanceof Sound) {
+				count++;
+			} else if (item instanceof Group subGroup) {
+				count += countSounds(subGroup);
+			}
+		}
+		return count;
 	}
 }
