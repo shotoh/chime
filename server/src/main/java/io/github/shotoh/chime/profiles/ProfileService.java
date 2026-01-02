@@ -47,7 +47,7 @@ public class ProfileService {
 		Profile profile = new Profile(UUID.randomUUID(), hashToken, "New Profile", Instant.now().toEpochMilli(), createDefaultGroup());
 		Profile saved = repository.save(profile);
 
-		return new ProfileWithTokenDTO(mapper.toDTO(saved), hashToken);
+		return new ProfileWithTokenDTO(mapper.toDTO(saved), token);
 	}
 
 	public ProfileWithTokenDTO cloneProfile(UUID id) {
@@ -58,7 +58,7 @@ public class ProfileService {
 		Profile clone = new Profile(UUID.randomUUID(), hashToken, original.getName(), Instant.now().toEpochMilli(), original.getRootGroup());
 		Profile saved = repository.save(clone);
 
-		return new ProfileWithTokenDTO(mapper.toDTO(saved), hashToken);
+		return new ProfileWithTokenDTO(mapper.toDTO(saved), token);
 	}
 
 	public void deleteProfile(UUID id, String token) {
