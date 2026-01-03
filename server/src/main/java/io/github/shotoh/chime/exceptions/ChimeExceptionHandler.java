@@ -1,6 +1,6 @@
 package io.github.shotoh.chime.exceptions;
 
-import io.github.shotoh.chime.responses.Response;
+import io.github.shotoh.chime.core.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

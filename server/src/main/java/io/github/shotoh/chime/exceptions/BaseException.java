@@ -1,7 +1,6 @@
 package io.github.shotoh.chime.exceptions;
 
-import io.github.shotoh.chime.responses.Fail;
-import io.github.shotoh.chime.responses.Response;
+import io.github.shotoh.chime.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -22,6 +21,6 @@ public abstract class BaseException extends RuntimeException {
 	public abstract HttpStatus getHttpStatus();
 
 	public ResponseEntity<Response> getResponse() {
-		return ResponseEntity.status(getHttpStatus()).body(Fail.fail(errorMap));
+		return ResponseEntity.status(getHttpStatus()).body(Response.fail(errorMap));
 	}
 }
