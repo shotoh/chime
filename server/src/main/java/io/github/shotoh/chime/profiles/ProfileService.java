@@ -44,7 +44,7 @@ public class ProfileService {
 		String token = generateToken();
 		String hashToken = hashToken(token);
 
-		Profile profile = new Profile(UUID.randomUUID(), hashToken, "New Profile", Instant.now().toEpochMilli(), createDefaultGroup());
+		Profile profile = new Profile(hashToken, "New Profile", Instant.now().toEpochMilli(), createDefaultGroup());
 		Profile saved = repository.save(profile);
 
 		return new ProfileWithTokenDTO(mapper.toDTO(saved), token);
@@ -55,7 +55,7 @@ public class ProfileService {
 		String hashToken = hashToken(token);
 
 		Profile original = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
-		Profile clone = new Profile(UUID.randomUUID(), hashToken, original.getName(), Instant.now().toEpochMilli(), original.getRootGroup());
+		Profile clone = new Profile(hashToken, original.getName(), Instant.now().toEpochMilli(), original.getRootGroup());
 		Profile saved = repository.save(clone);
 
 		return new ProfileWithTokenDTO(mapper.toDTO(saved), token);
