@@ -14,6 +14,6 @@ public class Profile {
 	private final UUID id;
 	private final String token;
 	private String name;
-	private long timestamp;
+	private long lastUpdated;
 	private Group rootGroup;
 }

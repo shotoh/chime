@@ -74,7 +74,7 @@ public class ProfileService {
 		verifyGroup(profileUpdateDTO.rootGroup());
 
 		profile.setName(profileUpdateDTO.name());
-		profile.setTimestamp(Instant.now().toEpochMilli());
+		profile.setLastUpdated(Instant.now().toEpochMilli());
 		profile.setRootGroup(profileUpdateDTO.rootGroup());
 
 		Profile saved = repository.save(profile);
