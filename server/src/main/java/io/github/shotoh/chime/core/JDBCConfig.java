@@ -26,7 +26,8 @@ public class JDBCConfig extends AbstractJdbcConfiguration {
 	public JdbcCustomConversions jdbcCustomConversions() {
 		return new JdbcCustomConversions(List.of(
 			new GroupWritingConverter(objectMapper),
-			new GroupReadingConverter(objectMapper)
+			new GroupReadingConverter(objectMapper),
+			new SoundReadingConverter(objectMapper)
 		));
 	}
 
