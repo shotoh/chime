@@ -111,7 +111,10 @@ public class ProfileService {
 	}
 
 	private void verifyToken(Profile profile, String token) {
-		String hashToken = hashToken(token);
+		if (token.length() < 7) {
+			throw new UnauthorizedException("id", "token mismatch");
+		}
+		String hashToken = hashToken(token.substring(7));
 		if (!hashToken.equals(profile.getToken())) {
 			throw new UnauthorizedException("id", "token mismatch");
 		}
