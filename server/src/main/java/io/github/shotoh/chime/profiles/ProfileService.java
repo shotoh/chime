@@ -36,7 +36,7 @@ public class ProfileService {
 	}
 
 	public ProfileDTO getProfile(UUID id) {
-		Profile profile = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
+		Profile profile = findProfile(id);
 		return mapper.toDTO(profile);
 	}
 
@@ -54,7 +54,7 @@ public class ProfileService {
 		String token = generateToken();
 		String hashToken = hashToken(token);
 
-		Profile original = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
+		Profile original = findProfile(id);
 		Profile clone = new Profile(hashToken, original.getName(), Instant.now().toEpochMilli(), original.getRootGroup());
 		Profile saved = repository.save(clone);
 
@@ -62,10 +62,11 @@ public class ProfileService {
 	}
 
 	public void deleteProfile(UUID id, String token) {
-		Profile profile = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
+		Profile profile = findProfile(id);
 		verifyToken(profile, token);
 
-		repository.delete(profile);
+		profile.setDeleted(true);
+		repository.save(profile);
 	}
 
 	public ProfileDTO updateProfile(UUID id, String token, ProfileUpdateDTO profileUpdateDTO) {
@@ -79,6 +80,14 @@ public class ProfileService {
 
 		Profile saved = repository.save(profile);
 		return mapper.toDTO(saved);
+	}
+
+	private Profile findProfile(UUID id) {
+		Profile profile = repository.findById(id).orElse(null);
+		if (profile == null || profile.isDeleted()) {
+			throw new ResourceNotFoundException("id", "profile not found");
+		}
+		return profile;
 	}
 
 	private Group createDefaultGroup() {

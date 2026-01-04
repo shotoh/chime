@@ -15,12 +15,14 @@ public class Profile {
 	private final String token;
 	private String name;
 	private long lastUpdated;
+	private boolean isDeleted;
 	private Group rootGroup;
 
 	public Profile(String token, String name, long lastUpdated, Group rootGroup) {
 		this.token = token;
 		this.name = name;
 		this.lastUpdated = lastUpdated;
+		this.isDeleted = false;
 		this.rootGroup = rootGroup;
 	}
 }
