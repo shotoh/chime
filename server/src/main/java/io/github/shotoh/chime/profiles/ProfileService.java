@@ -72,7 +72,7 @@ public class ProfileService {
 	public ProfileDTO updateProfile(UUID id, String token, ProfileUpdateDTO profileUpdateDTO) {
 		Profile profile = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("id", "profile not found"));
 		verifyToken(profile, token);
-		verifyGroup(profileUpdateDTO.rootGroup());
+		verifyUpdate(profileUpdateDTO);
 
 		profile.setName(profileUpdateDTO.name());
 		profile.setLastUpdated(Instant.now().toEpochMilli());
@@ -112,15 +112,21 @@ public class ProfileService {
 
 	private void verifyToken(Profile profile, String token) {
 		if (token.length() < 7) {
-			throw new UnauthorizedException("id", "token mismatch");
+			throw new UnauthorizedException("token", "token mismatch");
 		}
 		String hashToken = hashToken(token.substring(7));
 		if (!hashToken.equals(profile.getToken())) {
-			throw new UnauthorizedException("id", "token mismatch");
+			throw new UnauthorizedException("token", "token mismatch");
 		}
 	}
 
-	private void verifyGroup(Group group) {
+	private void verifyUpdate(ProfileUpdateDTO profileUpdateDTO) {
+		int nameLength = profileUpdateDTO.name().length();
+		if (nameLength == 0 || nameLength > 63) {
+			throw new UnauthorizedException("name", "invalid name length");
+		}
+
+		Group group = profileUpdateDTO.rootGroup();
 		int maxDepth = countDepth(group, 1);
 		if (maxDepth >= 3) {
 			throw new InvalidArgumentException("rootGroup", "group depth cannot be more than 3");
@@ -129,6 +135,8 @@ public class ProfileService {
 		if (sounds >= 200) {
 			throw new InvalidArgumentException("rootGroup", "sounds cannot be more than 200");
 		}
+
+		validateFields(group);
 	}
 
 	private int countDepth(Group group, int currentDepth) {
@@ -152,5 +160,27 @@ public class ProfileService {
 			}
 		}
 		return count;
+	}
+
+	private void validateFields(Group group) {
+		int nameLength = group.name().length();
+		if (nameLength == 0 || nameLength > 63) {
+			throw new UnauthorizedException("rootGroup", "invalid name length");
+		}
+		for (GroupItem item : group.items()) {
+			if (item instanceof Sound sound) {
+				if (sound.delay() <= 0) {
+					throw new InvalidArgumentException("rootGroup", "sound delay must be > 0");
+				} else if (sound.volume() <= 0 || sound.volume() > 2) {
+					throw new InvalidArgumentException("rootGroup", "sound volume must be between 0 and 2");
+				} else if (sound.pitch() <= 0 || sound.pitch() > 2) {
+					throw new InvalidArgumentException("rootGroup", "sound pitch must be between 0 and 2");
+				} else if (sound.seed() <= 0) {
+					throw new InvalidArgumentException("rootGroup", "sound seed must be > 0");
+				}
+			} else if (item instanceof Group subGroup) {
+				validateFields(subGroup);
+			}
+		}
 	}
 }

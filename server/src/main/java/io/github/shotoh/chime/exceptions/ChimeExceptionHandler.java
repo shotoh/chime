@@ -17,9 +17,4 @@ public class ChimeExceptionHandler {
 	public ResponseEntity<Response> handleException(Exception ex) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Response.error(ex.getMessage()));
 	}
-
-	// @ExceptionHandler(ValidationException.class)
-	// public ResponseEntity<Response> handleException(ValidationException ex) {
-	// 	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.fail(ex.getMessage()));
-	// }
 }
