@@ -169,14 +169,14 @@ public class ProfileService {
 		}
 		for (GroupItem item : group.items()) {
 			if (item instanceof Sound sound) {
-				if (sound.delay() <= 0) {
-					throw new InvalidArgumentException("rootGroup", "sound delay must be > 0");
-				} else if (sound.volume() <= 0 || sound.volume() > 2) {
+				if (sound.delay() < 0) {
+					throw new InvalidArgumentException("rootGroup", "sound delay must be >= 0");
+				} else if (sound.volume() < 0 || sound.volume() > 2) {
 					throw new InvalidArgumentException("rootGroup", "sound volume must be between 0 and 2");
-				} else if (sound.pitch() <= 0 || sound.pitch() > 2) {
+				} else if (sound.pitch() < 0 || sound.pitch() > 2) {
 					throw new InvalidArgumentException("rootGroup", "sound pitch must be between 0 and 2");
-				} else if (sound.seed() <= 0) {
-					throw new InvalidArgumentException("rootGroup", "sound seed must be > 0");
+				} else if (sound.seed() < 0) {
+					throw new InvalidArgumentException("rootGroup", "sound seed must be >= 0");
 				}
 			} else if (item instanceof Group subGroup) {
 				validateFields(subGroup);
