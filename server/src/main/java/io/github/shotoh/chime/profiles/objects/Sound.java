@@ -1,8 +1,5 @@
 package io.github.shotoh.chime.profiles.objects;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-
-public record Sound(String soundId, @Min(0) int delay, @Min(0) @Max(2) float volume, @Min(0) @Max(2) float pitch,
+public record Sound(String soundId, int delay, float volume, float pitch, int seed,
                     boolean enabled) implements GroupItem {
 }

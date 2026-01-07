@@ -1,6 +1,7 @@
 package io.github.shotoh.chime.exceptions;
 
-import io.github.shotoh.chime.responses.Response;
+import io.github.shotoh.chime.core.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,5 +11,10 @@ public class ChimeExceptionHandler {
 	@ExceptionHandler(BaseException.class)
 	public ResponseEntity<Response> handleException(BaseException ex) {
 		return ex.getResponse();
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<Response> handleException(Exception ex) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Response.error(ex.getMessage()));
 	}
 }
