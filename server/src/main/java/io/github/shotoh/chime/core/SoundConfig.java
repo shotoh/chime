@@ -27,7 +27,7 @@ public class SoundConfig implements WebMvcConfigurer {
 		logger.info("Loaded sounds in {}", directory);
 
 		registry.addResourceHandler("/sounds/**")
-			.addResourceLocations("file:///" + directory)
+			.addResourceLocations("file:/" + directory)
 			.setCachePeriod(3600);
 	}
 }
