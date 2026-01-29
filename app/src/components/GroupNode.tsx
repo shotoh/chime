@@ -72,12 +72,15 @@ export default function GroupNode({ data, onChange, onDelete, id, depth = 0, tot
         <div className="flex flex-col">
           <SortableContext items={data.items.map(i => i._id!)} strategy={verticalListSortingStrategy}>
             {data.items.map((item, i) => {
-              const props = {
-                key: item._id, id: item._id!, data: item as any,
+              const commonProps = {
+                id: item._id!, 
+                data: item as any,
                 onChange: (d: any) => { const list = [...data.items]; list[i] = d; updateItems(list); },
                 onDelete: () => updateItems(data.items.filter((_, idx) => idx !== i))
               };
-              return item.type === 'sound' ? <SoundNode {...props} /> : <GroupNode {...props} depth={depth + 1} totalSounds={totalSounds} />;
+              return item.type === 'sound' 
+                ? <SoundNode key={item._id} {...commonProps} /> 
+                : <GroupNode key={item._id} {...commonProps} depth={depth + 1} totalSounds={totalSounds} />;
             })}
           </SortableContext>
           
